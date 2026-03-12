@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16
+    container_name: missionops-db
+    environment:
+      POSTGRES_USER: missionops
+      POSTGRES_PASSWORD: missionops
+      POSTGRES_DB: missionops
+    ports:
+      - "5432:5432"
+    volumes:
+      - missionops_pgdata:/var/lib/postgresql/data
+      - ./infra/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: ./backend
+    container_name: missionops-backend
+    environment:
+      PORT: "8080"
+      JWT_SECRET: "dev-secret-change-me"
+      DATABASE_URL: "postgres://missionops:missionops@db:5432/missionops?sslmode=disable"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: missionops-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  missionops_pgdata:

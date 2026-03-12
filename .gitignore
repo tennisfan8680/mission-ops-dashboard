@@ -1,0 +1,7 @@
+node_modules/
+frontend/dist/
+missionops_pgdata/
+.env
+.DS_Store
+*.log
+backend/server
