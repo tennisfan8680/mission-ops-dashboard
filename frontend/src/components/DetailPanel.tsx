@@ -2,9 +2,10 @@ import type { Alert } from "../types";
 
 type DetailPanelProps = {
   selectedAlert: Alert | null;
+  onAction: (alertId: number, action: "ack" | "escalate" | "close") => void;
 };
 
-export default function DetailPanel({ selectedAlert }: DetailPanelProps) {
+export default function DetailPanel({ selectedAlert, onAction }: DetailPanelProps) {
   return (
     <section className="panel detail-panel">
       <div className="panel-header">
@@ -33,9 +34,15 @@ export default function DetailPanel({ selectedAlert }: DetailPanelProps) {
             <p><strong>Description:</strong> {selectedAlert.description}</p>
 
             <div className="action-row">
-              <button>Acknowledge</button>
-              <button>Escalate</button>
-              <button>Close</button>
+              <button onClick={() => onAction(selectedAlert.id, "ack")}>
+                Acknowledge
+              </button>
+              <button onClick={() => onAction(selectedAlert.id, "escalate")}>
+                Escalate
+              </button>
+              <button onClick={() => onAction(selectedAlert.id, "close")}>
+                Close
+              </button>
             </div>
           </>
         ) : (

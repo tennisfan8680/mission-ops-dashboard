@@ -1,3 +1,4 @@
+import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
 import type { Asset, EventItem } from "../types";
 
 type MapPanelProps = {
@@ -13,36 +14,51 @@ export default function MapPanel({ assets, events }: MapPanelProps) {
         <span>Live View</span>
       </div>
 
-      <div className="map-placeholder">
-        <div className="grid-overlay" />
+      <div style={{ height: "580px", borderRadius: "14px", overflow: "hidden" }}>
+        <MapContainer
+          center={[36.91, -75.98]}
+          zoom={9}
+          style={{ height: "100%", width: "100%" }}
+        >
+          <TileLayer
+            attribution="© OpenStreetMap contributors"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-        {assets.map((asset, index) => (
-          <div
-            key={asset.id}
-            className="map-marker asset-marker"
-            style={{
-              top: `${25 + index * 18}%`,
-              left: `${20 + index * 22}%`
-            }}
-            title={`${asset.name} — ${asset.status}`}
-          >
-            {asset.name}
-          </div>
-        ))}
+          {assets.map((asset) => (
+            <CircleMarker
+              key={asset.id}
+              center={[asset.lat, asset.lon]}
+              radius={10}
+              pathOptions={{ color: "#3b82f6", fillColor: "#60a5fa", fillOpacity: 0.8 }}
+            >
+              <Popup>
+                <strong>{asset.name}</strong>
+                <br />
+                {asset.type}
+                <br />
+                Status: {asset.status}
+              </Popup>
+            </CircleMarker>
+          ))}
 
-        {events.map((event, index) => (
-          <div
-            key={event.id}
-            className="map-marker event-marker"
-            style={{
-              top: `${18 + index * 20}%`,
-              left: `${58 - index * 10}%`
-            }}
-            title={`${event.type} — ${event.location}`}
-          >
-            {event.type}
-          </div>
-        ))}
+          {events.map((event, index) => (
+            <CircleMarker
+              key={event.id}
+              center={[36.9 + index * 0.02, -76.0 + index * 0.02]}
+              radius={8}
+              pathOptions={{ color: "#ef4444", fillColor: "#f87171", fillOpacity: 0.8 }}
+            >
+              <Popup>
+                <strong>{event.type}</strong>
+                <br />
+                {event.location}
+                <br />
+                {event.details}
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MapContainer>
       </div>
     </section>
   );

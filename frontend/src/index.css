@@ -283,3 +283,12 @@ button {
     min-height: 400px;
   }
 }
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 1.2rem;
+  color: #cbd5e1;
+}
