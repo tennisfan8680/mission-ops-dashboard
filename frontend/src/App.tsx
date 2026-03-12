@@ -7,6 +7,7 @@ import DetailPanel from "./components/DetailPanel";
 import type { Alert, Asset, EventItem } from "./types";
 
 const API_BASE = "http://localhost:8080";
+const POLL_INTERVAL_MS = 5000;
 
 export default function App() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -14,32 +15,61 @@ export default function App() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string>("");
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [alertsRes, assetsRes, eventsRes] = await Promise.all([
-          fetch(`${API_BASE}/alerts`),
-          fetch(`${API_BASE}/assets`),
-          fetch(`${API_BASE}/events`)
-        ]);
+  async function loadData(isInitialLoad = false) {
+    try {
+      const [alertsRes, assetsRes, eventsRes] = await Promise.all([
+        fetch(`${API_BASE}/alerts`),
+        fetch(`${API_BASE}/assets`),
+        fetch(`${API_BASE}/events`)
+      ]);
 
-        const alertsData: Alert[] = await alertsRes.json();
-        const assetsData: Asset[] = await assetsRes.json();
-        const eventsData: EventItem[] = await eventsRes.json();
+      if (!alertsRes.ok || !assetsRes.ok || !eventsRes.ok) {
+        throw new Error("Failed to fetch dashboard data");
+      }
 
-        setAlerts(alertsData);
-        setAssets(assetsData);
-        setEvents(eventsData);
-        setSelectedAlert(alertsData[0] ?? null);
-      } catch (error) {
-        console.error("Failed to load dashboard data:", error);
-      } finally {
+      const alertsData: Alert[] = await alertsRes.json();
+      const assetsData: Asset[] = await assetsRes.json();
+      const eventsData: EventItem[] = await eventsRes.json();
+
+      setAlerts(alertsData);
+      setAssets(assetsData);
+      setEvents(eventsData);
+      setLastUpdated(new Date().toLocaleTimeString());
+
+      setSelectedAlert((currentSelected) => {
+        if (!currentSelected) {
+          return alertsData[0] ?? null;
+        }
+
+        const refreshedSelected = alertsData.find(
+          (alert) => alert.id === currentSelected.id
+        );
+
+        return refreshedSelected ?? alertsData[0] ?? null;
+      });
+
+      if (isInitialLoad && alertsData.length > 0) {
+        setSelectedAlert(alertsData[0]);
+      }
+    } catch (error) {
+      console.error("Failed to load dashboard data:", error);
+    } finally {
+      if (isInitialLoad) {
         setLoading(false);
       }
     }
+  }
 
-    loadData();
+  useEffect(() => {
+    loadData(true);
+
+    const intervalId = setInterval(() => {
+      loadData(false);
+    }, POLL_INTERVAL_MS);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   async function handleAlertAction(
@@ -64,6 +94,7 @@ export default function App() {
       );
 
       setSelectedAlert(updatedAlert);
+      setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
       console.error("Alert action failed:", error);
     }
@@ -72,7 +103,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="app-shell">
-        <TopBar role="Operator" />
+        <TopBar role="Operator" lastUpdated="Loading..." />
         <main className="loading-state">Loading mission data...</main>
       </div>
     );
@@ -80,7 +111,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <TopBar role="Operator" />
+      <TopBar role="Operator" lastUpdated={lastUpdated} />
 
       <main className="dashboard-grid">
         <AlertInbox

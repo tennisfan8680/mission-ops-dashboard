@@ -64,6 +64,15 @@ button {
   color: #86efac;
 }
 
+.last-updated {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  border: 1px solid #334155;
+  background: rgba(148, 163, 184, 0.08);
+  color: #cbd5e1;
+}
+
 .role-badge {
   background: rgba(59, 130, 246, 0.12);
   color: #93c5fd;
@@ -292,3 +301,4 @@ button {
   font-size: 1.2rem;
   color: #cbd5e1;
 }
+
