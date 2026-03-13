@@ -16,7 +16,7 @@ export default function MapPanel({ assets, events }: MapPanelProps) {
 
       <div style={{ height: "580px", borderRadius: "14px", overflow: "hidden" }}>
         <MapContainer
-          center={[36.91, -75.98]}
+          center={[37.26, -77.38]}
           zoom={9}
           style={{ height: "100%", width: "100%" }}
         >
@@ -29,8 +29,12 @@ export default function MapPanel({ assets, events }: MapPanelProps) {
             <CircleMarker
               key={asset.id}
               center={[asset.lat, asset.lon]}
-              radius={10}
-              pathOptions={{ color: "#3b82f6", fillColor: "#60a5fa", fillOpacity: 0.8 }}
+              radius={9}
+              pathOptions={{
+                color: "#d1d5db",
+                fillColor: "#9ca3af",
+                fillOpacity: 0.85
+              }}
             >
               <Popup>
                 <strong>{asset.name}</strong>
@@ -42,12 +46,16 @@ export default function MapPanel({ assets, events }: MapPanelProps) {
             </CircleMarker>
           ))}
 
-          {events.map((event, index) => (
+          {events.map((event) => (
             <CircleMarker
               key={event.id}
-              center={[36.9 + index * 0.02, -76.0 + index * 0.02]}
-              radius={8}
-              pathOptions={{ color: "#ef4444", fillColor: "#f87171", fillOpacity: 0.8 }}
+              center={[event.lat, event.lon]}
+              radius={7}
+              pathOptions={{
+                color: "#ef4444",
+                fillColor: "#f87171",
+                fillOpacity: 0.9
+              }}
             >
               <Popup>
                 <strong>{event.type}</strong>

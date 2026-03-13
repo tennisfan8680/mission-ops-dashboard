@@ -1,7 +1,7 @@
 :root {
   font-family: Inter, system-ui, Arial, sans-serif;
   color: #e5e7eb;
-  background: #0b1220;
+  background: #050505;
 }
 
 * {
@@ -11,7 +11,7 @@
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top, #162033, #0b1220 60%);
+    radial-gradient(circle at top, #111111, #050505 55%, #000000 100%);
   color: #e5e7eb;
 }
 
@@ -28,54 +28,51 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid #243045;
-  border-radius: 16px;
+  background: rgba(10, 10, 10, 0.98);
+  border: 1px solid #202020;
+  border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
 .topbar h1 {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.55rem;
+  letter-spacing: 0.02em;
 }
 
 .topbar p {
   margin: 4px 0 0;
-  color: #94a3b8;
+  color: #8a8a8a;
+  font-size: 0.95rem;
 }
 
 .topbar-right {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
+.last-updated,
 .status-pill,
 .role-badge {
   padding: 8px 12px;
   border-radius: 999px;
-  font-size: 0.9rem;
-  border: 1px solid #334155;
+  font-size: 0.88rem;
+  border: 1px solid #2a2a2a;
+  background: #111111;
+  color: #d4d4d4;
 }
 
 .status-pill.online {
-  background: rgba(34, 197, 94, 0.12);
-  color: #86efac;
-}
-
-.last-updated {
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  border: 1px solid #334155;
-  background: rgba(148, 163, 184, 0.08);
-  color: #cbd5e1;
+  background: #0c0c0c;
+  color: #d1d5db;
 }
 
 .role-badge {
-  background: rgba(59, 130, 246, 0.12);
-  color: #93c5fd;
+  background: #111111;
+  color: #f3f4f6;
 }
 
 .dashboard-grid {
@@ -86,11 +83,12 @@ button {
 }
 
 .panel {
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid #243045;
-  border-radius: 16px;
+  background: rgba(8, 8, 8, 0.97);
+  border: 1px solid #202020;
+  border-radius: 12px;
   padding: 16px;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 
 .panel-header {
@@ -102,12 +100,14 @@ button {
 
 .panel-header h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  color: #f5f5f5;
+  letter-spacing: 0.02em;
 }
 
 .panel-header span {
-  color: #94a3b8;
-  font-size: 0.9rem;
+  color: #888888;
+  font-size: 0.88rem;
 }
 
 .alert-list {
@@ -119,17 +119,23 @@ button {
 .alert-card {
   width: 100%;
   text-align: left;
-  background: #111827;
-  color: #e5e7eb;
-  border: 1px solid #263245;
-  border-radius: 14px;
+  background: #0d0d0d;
+  color: #f3f4f6;
+  border: 1px solid #232323;
+  border-radius: 12px;
   padding: 12px;
   cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.alert-card:hover {
+  border-color: #3a3a3a;
+  transform: translateY(-1px);
 }
 
 .alert-card.selected {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 1px #60a5fa inset;
+  border-color: #666666;
+  box-shadow: 0 0 0 1px #555555 inset;
 }
 
 .alert-card-top {
@@ -140,44 +146,46 @@ button {
 
 .alert-card h3 {
   margin: 0 0 8px;
-  font-size: 0.98rem;
+  font-size: 0.97rem;
+  color: #fafafa;
 }
 
 .alert-card p,
 .alert-card small {
   margin: 0;
-  color: #94a3b8;
+  color: #9a9a9a;
 }
 
 .severity {
   padding: 4px 8px;
   border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .severity.low {
-  background: rgba(34, 197, 94, 0.12);
-  color: #86efac;
+  background: rgba(255, 255, 255, 0.06);
+  color: #d4d4d4;
 }
 
 .severity.medium {
-  background: rgba(250, 204, 21, 0.12);
-  color: #fde68a;
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
 }
 
 .severity.high {
   background: rgba(249, 115, 22, 0.12);
-  color: #fdba74;
+  color: #fb923c;
 }
 
 .severity.critical {
-  background: rgba(239, 68, 68, 0.12);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.14);
+  color: #f87171;
 }
 
 .alert-status {
-  color: #94a3b8;
+  color: #9a9a9a;
   font-size: 0.8rem;
 }
 
@@ -186,54 +194,11 @@ button {
   flex-direction: column;
 }
 
-.map-placeholder {
-  position: relative;
-  flex: 1;
-  min-height: 580px;
-  border-radius: 16px;
-  overflow: hidden;
-  background:
-    linear-gradient(rgba(59, 130, 246, 0.07), rgba(59, 130, 246, 0.03)),
-    linear-gradient(135deg, #0f172a, #111827);
-  border: 1px solid #243045;
-}
-
-.grid-overlay {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-.map-marker {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  padding: 8px 10px;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.asset-marker {
-  background: rgba(59, 130, 246, 0.18);
-  color: #bfdbfe;
-  border: 1px solid #3b82f6;
-}
-
-.event-marker {
-  background: rgba(239, 68, 68, 0.16);
-  color: #fecaca;
-  border: 1px solid #ef4444;
-}
-
 .filters-box,
 .detail-box {
-  background: #111827;
-  border: 1px solid #263245;
-  border-radius: 14px;
+  background: #0d0d0d;
+  border: 1px solid #232323;
+  border-radius: 12px;
   padding: 14px;
   margin-bottom: 14px;
 }
@@ -241,6 +206,7 @@ button {
 .filters-box h3,
 .detail-box h3 {
   margin-top: 0;
+  color: #f5f5f5;
 }
 
 .filter-tags {
@@ -250,16 +216,16 @@ button {
 }
 
 .filter-tags span {
-  background: #1e293b;
-  border: 1px solid #334155;
-  color: #cbd5e1;
+  background: #111111;
+  border: 1px solid #2b2b2b;
+  color: #d1d5db;
   padding: 6px 10px;
   border-radius: 999px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
 .detail-box p {
-  color: #cbd5e1;
+  color: #d1d5db;
   line-height: 1.5;
 }
 
@@ -270,27 +236,18 @@ button {
 }
 
 .action-row button {
-  border: 1px solid #334155;
-  background: #1e293b;
-  color: #e2e8f0;
+  border: 1px solid #2d2d2d;
+  background: #121212;
+  color: #f3f4f6;
   padding: 10px 12px;
   border-radius: 10px;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.action-row button:hover,
-.alert-card:hover {
-  border-color: #60a5fa;
-}
-
-@media (max-width: 1100px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .map-placeholder {
-    min-height: 400px;
-  }
+.action-row button:hover {
+  background: #1a1a1a;
+  border-color: #444444;
 }
 
 .loading-state {
@@ -298,7 +255,16 @@ button {
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  font-size: 1.2rem;
-  color: #cbd5e1;
+  font-size: 1.15rem;
+  color: #cfcfcf;
 }
 
+.leaflet-container {
+  filter: grayscale(0.35) brightness(0.72) contrast(1.05);
+}
+
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}

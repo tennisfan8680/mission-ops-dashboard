@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./index.css";
 import TopBar from "./components/TopBar";
 import AlertInbox from "./components/AlertInbox";
@@ -7,7 +7,14 @@ import DetailPanel from "./components/DetailPanel";
 import type { Alert, Asset, EventItem } from "./types";
 
 const API_BASE = "http://localhost:8080";
-const POLL_INTERVAL_MS = 5000;
+const WS_URL = "ws://localhost:8080/ws";
+
+type DashboardSnapshot = {
+  alerts: Alert[];
+  assets: Asset[];
+  events: EventItem[];
+  lastUpdated: string;
+};
 
 export default function App() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -15,61 +22,82 @@ export default function App() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [loading, setLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<string>("");
+  const [lastUpdated, setLastUpdated] = useState<string>("Connecting...");
+  const socketRef = useRef<WebSocket | null>(null);
 
-  async function loadData(isInitialLoad = false) {
-    try {
-      const [alertsRes, assetsRes, eventsRes] = await Promise.all([
-        fetch(`${API_BASE}/alerts`),
-        fetch(`${API_BASE}/assets`),
-        fetch(`${API_BASE}/events`)
-      ]);
+  useEffect(() => {
+    async function loadInitialData() {
+      try {
+        const [alertsRes, assetsRes, eventsRes] = await Promise.all([
+          fetch(`${API_BASE}/alerts`),
+          fetch(`${API_BASE}/assets`),
+          fetch(`${API_BASE}/events`)
+        ]);
 
-      if (!alertsRes.ok || !assetsRes.ok || !eventsRes.ok) {
-        throw new Error("Failed to fetch dashboard data");
-      }
+        const alertsData: Alert[] = await alertsRes.json();
+        const assetsData: Asset[] = await assetsRes.json();
+        const eventsData: EventItem[] = await eventsRes.json();
 
-      const alertsData: Alert[] = await alertsRes.json();
-      const assetsData: Asset[] = await assetsRes.json();
-      const eventsData: EventItem[] = await eventsRes.json();
-
-      setAlerts(alertsData);
-      setAssets(assetsData);
-      setEvents(eventsData);
-      setLastUpdated(new Date().toLocaleTimeString());
-
-      setSelectedAlert((currentSelected) => {
-        if (!currentSelected) {
-          return alertsData[0] ?? null;
-        }
-
-        const refreshedSelected = alertsData.find(
-          (alert) => alert.id === currentSelected.id
-        );
-
-        return refreshedSelected ?? alertsData[0] ?? null;
-      });
-
-      if (isInitialLoad && alertsData.length > 0) {
-        setSelectedAlert(alertsData[0]);
-      }
-    } catch (error) {
-      console.error("Failed to load dashboard data:", error);
-    } finally {
-      if (isInitialLoad) {
+        setAlerts(alertsData);
+        setAssets(assetsData);
+        setEvents(eventsData);
+        setSelectedAlert(alertsData[0] ?? null);
+        setLastUpdated(new Date().toLocaleTimeString());
+      } catch (error) {
+        console.error("Initial load failed:", error);
+      } finally {
         setLoading(false);
       }
     }
-  }
 
-  useEffect(() => {
-    loadData(true);
+    loadInitialData();
 
-    const intervalId = setInterval(() => {
-      loadData(false);
-    }, POLL_INTERVAL_MS);
+    const socket = new WebSocket(WS_URL);
+    socketRef.current = socket;
 
-    return () => clearInterval(intervalId);
+    socket.onopen = () => {
+      console.log("WebSocket connected");
+      setLastUpdated("Live");
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const snapshot: DashboardSnapshot = JSON.parse(event.data);
+
+        setAlerts(snapshot.alerts);
+        setAssets(snapshot.assets);
+        setEvents(snapshot.events);
+        setLastUpdated(snapshot.lastUpdated);
+
+        setSelectedAlert((currentSelected) => {
+          if (!currentSelected) {
+            return snapshot.alerts[0] ?? null;
+          }
+
+          const refreshedSelected = snapshot.alerts.find(
+            (alert) => alert.id === currentSelected.id
+          );
+
+          return refreshedSelected ?? snapshot.alerts[0] ?? null;
+        });
+      } catch (error) {
+        console.error("Failed to parse WebSocket message:", error);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setLastUpdated("Connection issue");
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket disconnected");
+      setLastUpdated("Disconnected");
+    };
+
+    return () => {
+      socket.close();
+    };
   }, []);
 
   async function handleAlertAction(
@@ -94,7 +122,6 @@ export default function App() {
       );
 
       setSelectedAlert(updatedAlert);
-      setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
       console.error("Alert action failed:", error);
     }

@@ -28,4 +28,6 @@ export interface EventItem {
   timestamp: string;
   location: string;
   details: string;
+  lat: number;
+  lon: number;
 }
